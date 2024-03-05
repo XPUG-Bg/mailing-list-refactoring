@@ -22,7 +22,7 @@ public class MailingListServer {
 
     HostInformation host = new HostInformation(args[0], args[1], args[2], args[3], args[4], args[5]);
     String listAddress = args[6];
-    int interval = new Integer(args[7]).intValue();
+    int interval = Integer.parseInt(args[7]);
 
     Roster roster = null;
     try {
