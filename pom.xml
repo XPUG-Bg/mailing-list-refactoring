@@ -15,6 +15,13 @@
         <maven.compiler.target>19</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/releases/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.sun.mail</groupId>
@@ -26,6 +33,13 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jvnet.mock-javamail</groupId>
+            <artifactId>mock-javamail</artifactId>
+            <version>1.12</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -61,6 +75,13 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <mail.smtp.class>org.jvnet.mock_javamail.MockTransport</mail.smtp.class>
+                        <mail.pop3.class>org.jvnet.mock_javamail.MockStore</mail.pop3.class>
+                        <mail.imap.class>org.jvnet.mock_javamail.MockStore</mail.imap.class>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
 
             <plugin>
