@@ -71,7 +71,7 @@ public class MailingListServer {
     }
   }
 
-  private static void process(HostInformation host, String listAddress, Roster roster, Session session, Store store,
+  public static void process(HostInformation host, String listAddress, Roster roster, Session session, Store store,
       Folder folder) throws MessagingException {
     try {
       if (folder.getMessageCount() != 0) {
