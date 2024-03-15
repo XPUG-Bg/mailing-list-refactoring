@@ -35,8 +35,8 @@ public class FileRoster implements Roster {
 
     @Override
     public boolean containsOneOf(Address[] from) {
-        var fromAddress = Arrays.asList(from);
-        return addresses.parallelStream().anyMatch(addressToSearch -> fromAddress.contains(addressToSearch));
+        var fromAddresses = Arrays.asList(from);
+        return addresses.parallelStream().anyMatch(fromAddresses::contains);
     }
 
     @Override
