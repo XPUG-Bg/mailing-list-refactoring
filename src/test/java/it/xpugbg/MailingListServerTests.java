@@ -69,5 +69,59 @@ public class MailingListServerTests {
     assertEquals("[list] Test Message", targetInbox.get(0).getSubject());
     assertArrayEquals(new Address[] { sourceInbox.getAddress(), targetInbox.getAddress() },
         targetInbox.get(0).getAllRecipients());
+
+    // Cleanup
+    sourceInbox.clear();
+    targetInbox.clear();
+  }
+
+  @Test
+  public void process_should_retrieveMessage_and_not_forwardMessage_when_FromAddress_notInRoster()
+      throws AddressException, NoSuchProviderException, MessagingException, IOException {
+    // Arrange
+    var hostInfo = new HostInformation("test.com", "test.com", "list.address", "password", "list.address", "password");
+    var listAddress = "list.address@test.com";
+
+    var sourceInbox = Mailbox.get(listAddress);
+    var targetInbox = Mailbox.get("user-2@test.com");
+
+    var mockRoster = new Roster() {
+      @Override
+      public boolean containsOneOf(Address[] from) {
+        return false;
+      }
+
+      @Override
+      public Address[] getAddresses() {
+        return new Address[] { targetInbox.getAddress() };
+      }
+    };
+
+    var mailSession = Session.getDefaultInstance(System.getProperties(), null);
+
+    var testMessage = new MimeMessage(mailSession);
+    testMessage.setFrom(new InternetAddress("user-1@test.com"));
+    testMessage.setSubject("Test Message");
+    testMessage.setText("Some Test Mail Message");
+
+    sourceInbox.add(testMessage);
+
+    var mailStore = mailSession.getStore("pop3");
+    mailStore.connect(hostInfo.pop3Host(), -1, hostInfo.pop3User(), hostInfo.pop3Password());
+    var mailFolder = mailStore.getDefaultFolder();
+
+    // Act
+    MailingListServer.process(hostInfo, listAddress, mockRoster, mailSession, mailStore, mailFolder);
+
+    // Assert
+    // should NOT remove original message
+    assertEquals(1, sourceInbox.size());
+
+    // should NOT forward message
+    assertEquals(0, targetInbox.size());
+
+    // Cleanup
+    sourceInbox.clear();
+    targetInbox.clear();
   }
 }
